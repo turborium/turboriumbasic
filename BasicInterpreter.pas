@@ -97,7 +97,7 @@ const
   MaxExpressionStackLevel = 32;
 
 const
-  sInvite = 'CRAZZZYBASIC v0.2';
+  sInvite = 'CRAZZZYBASIC v0.2.1';
   sReinput = 'Bad input, reinput:';
   sClosingParenthesisExpected = 'Closing parenthesis expected';
   sExpressionExpected = 'Expression expected';
@@ -1390,6 +1390,7 @@ begin
   Console.WriteNewLine(sInvite);
   while True do
   begin
+
     Console.ReadNewLine(Input);
 
     try
