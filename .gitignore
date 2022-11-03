@@ -25,7 +25,7 @@
 # Uncomment this if you are not using external objects (zlib library for example).
 #*.obj
 #
-
+/**/*.exe
 # Delphi compiler-generated binaries (safe to delete)
 *.exe
 *.dll
