@@ -5,6 +5,7 @@ unit BasicInterpreter;
 interface
 
 uses
+  Windows,
   BasicClasses, SysUtils, Generics.Collections,
   Generics.Defaults, BasicScanner;
 
@@ -183,6 +184,8 @@ begin
       Result := 'Let';
     TTokenType.Rem:
       Result := 'Rem';
+    TTokenType.ClearScreen:
+      Result := 'ClearScreen';
     TTokenType.&Goto:
       Result := 'Goto';
     TTokenType.&If:
@@ -230,6 +233,7 @@ begin
       Result := 'Frac(';
     TTokenType.Random:
       Result := 'Random';
+    
     // terminal
     TTokenType.Terminal:
       Result := 'Terminal';
@@ -1157,6 +1161,27 @@ begin
     ForStack.Delete(ItemIndex);
 end;
 
+procedure ClearScreen;
+var
+  stdout: THandle;
+  csbi: TConsoleScreenBufferInfo;
+  ConsoleSize: DWORD;
+  NumWritten: DWORD;
+  Origin: TCoord;
+begin
+  stdout := GetStdHandle(STD_OUTPUT_HANDLE);
+  Win32Check(stdout<>INVALID_HANDLE_VALUE);
+  Win32Check(GetConsoleScreenBufferInfo(stdout, csbi));
+  ConsoleSize := csbi.dwSize.X * csbi.dwSize.Y;
+  Origin.X := 0;
+  Origin.Y := 0;
+  Win32Check(FillConsoleOutputCharacter(stdout, ' ', ConsoleSize, Origin,
+    NumWritten));
+  Win32Check(FillConsoleOutputAttribute(stdout, csbi.wAttributes, ConsoleSize, Origin,
+    NumWritten));
+  Win32Check(SetConsoleCursorPosition(stdout, Origin));
+end;
+
 procedure TInterpreter.RunLine;
 begin
   while True do
@@ -1172,6 +1197,7 @@ begin
       begin
         ExecutePrint;
       end;
+      
       // INPUT
       TTokenType.Input:
       begin
@@ -1183,6 +1209,7 @@ begin
         ExecuteIf;
         Continue;
       end;
+
       // ELSE
       TTokenType.&Else:
       begin
@@ -1207,11 +1234,18 @@ begin
         ExecuteNext;
         Continue;
       end;
+      
       // NEXT
       TTokenType.Sleep:
       begin
         ExecuteSleep;
         Continue;
+      end;
+
+      TTokenType.ClearScreen:
+      begin
+        ClearScreen;
+        Scanner.NextToken;
       end;
       // LET
       TTokenType.Let, TTokenType.Variable:
@@ -1323,6 +1357,7 @@ begin
       begin
         ExecuteNew;
       end;
+      
       // RUN
       TTokenType.Run:
       begin
