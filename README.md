@@ -1,6 +1,8 @@
 # CrazzzyBasic
 **Simple BASIC interpriter**
 
+[Powered By Delphi (ObjectPascal)](https://www.embarcadero.com/)  
+
 ![screen](screen.png)
 
 ## Введение
