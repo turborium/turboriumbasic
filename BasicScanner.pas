@@ -57,6 +57,7 @@ type
     Int,
     Frac,
     Random,
+    ClearScreen,
     // terminal
     Terminal
   );
@@ -283,6 +284,8 @@ begin
           FToken := TTokenType.List
         else if TokenString = 'NEW' then
           FToken := TTokenType.New
+        else if TokenString = 'CLS' then
+          FToken := TTokenType.ClearScreen
         else if TokenString = 'LOAD' then
           FToken := TTokenType.Load
         else if TokenString = 'SAVE' then
