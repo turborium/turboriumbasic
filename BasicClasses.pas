@@ -1,3 +1,8 @@
+// TurboriumBasic
+//
+// Turborium(c) 2021-2024
+//
+// Source code: https://github.com/turborium/turboriumbasic
 unit BasicClasses;
 
 {$SCOPEDENUMS ON}
@@ -13,6 +18,8 @@ type
     procedure Read(out Str: string);
     procedure WriteNewLine(const Line: string);
     procedure Write(const Str: string);
+    procedure Clear();
+    function CheckBreak(): Boolean;
   end;
 
 	EBasicError = class(Exception)

@@ -10,5 +10,6 @@
 210 print
 220 next y
 230 v=v+0.3
-240 sleep 300
+240 sleep 700
+245 cls
 250 goto 10

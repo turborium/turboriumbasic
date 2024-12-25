@@ -1,0 +1,9 @@
+10 CLS
+20 PRINT "*** CLS TEST ***"
+30 SLEEP 1000
+40 FOR i=1 TO 10
+50 SLEEP 500
+60 CLS
+70 PRINT "i = "; i
+80 NEXT i
+90 PRINT "*** OK ***"

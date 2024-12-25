@@ -1,3 +1,8 @@
+// TurboriumBasic
+//
+// Turborium(c) 2021-2024
+//
+// Source code: https://github.com/turborium/turboriumbasic
 unit BasicInterpreter;
 
 {$SCOPEDENUMS ON}
@@ -96,7 +101,7 @@ const
   MaxExpressionStackLevel = 32;
 
 const
-  sInvite = 'CRAZZZYBASIC v0.2';
+  sInvite = 'Turborium Basic v0.3';
   sReinput = 'Bad input, reinput:';
   sClosingParenthesisExpected = 'Closing parenthesis expected';
   sExpressionExpected = 'Expression expected';
@@ -105,7 +110,7 @@ const
   sDivisionByZero = 'Division by zero';
   sBadFunctionArgument = 'Bad function argument';
   sOverflow = 'Overflow';
-  sInternalError = 'Internal error! Please submit issue to https://github.com/crazzzypeter/CrazzzyBasic';
+  sInternalError = 'Internal error! Please submit issue to https://github.com/turborium/turboriumbasic/';
   sStackOverflow = 'Stack overflow';
   sVariableNotFound = 'Variable not found';
   sExpected1But2Found = 'Expected "%s" but "%s" found';
@@ -115,6 +120,7 @@ const
   sNextWithoutFor = 'Next without For';
   sFileCanNotLoadWithMessage = 'File can''t load with message "%s"';
   sFileCanNotSaveWithMessage = 'File can''t save with message "%s"';
+  sBreakByUser = 'Break by user';
 
 function TokenTypeToString(const Token: TTokenType): string;
 begin
@@ -179,6 +185,8 @@ begin
       Result := 'Print';
     TTokenType.Input:
       Result := 'Input';
+    TTokenType.Cls:
+      Result := 'Cls';
     TTokenType.Let:
       Result := 'Let';
     TTokenType.Rem:
@@ -232,7 +240,7 @@ begin
       Result := 'Random';
     // terminal
     TTokenType.Terminal:
-      Result := 'Terminal';
+      Result := 'EOF';
     else
       Result := 'WHAT?' + IntToStr(Integer(Token));
   end;
@@ -985,6 +993,8 @@ begin
 end;
 
 procedure TInterpreter.ExecuteSleep;
+var
+  Start: TDateTime;
 begin
   // SLEEP
   Scanner.NextToken;
@@ -992,7 +1002,13 @@ begin
   RequireToken(TTokenType.Integer);
   Scanner.NextToken;
   // work
-  Sleep(Scanner.IntegerValue);
+  Start := Now() + Scanner.IntegerValue / 1000 / SecsPerDay;
+  while Start > Now() do
+  begin
+    Sleep(3);
+    if Console.CheckBreak() then
+      Break;
+  end;
 end;
 
 procedure TInterpreter.NextLine;
@@ -1158,9 +1174,24 @@ begin
 end;
 
 procedure TInterpreter.RunLine;
+var
+  Skip: Integer;
 begin
+  Skip := 0;
   while True do
   begin
+    // user break
+    if Skip = 0 then
+    begin
+      Skip := 50;
+      if Console.CheckBreak() then
+      begin
+        Console.WriteNewLine(sBreakByUser);
+        Break;
+      end;
+    end else
+      Skip := Skip - 1;
+
     case Scanner.Token of
       TTokenType.Colon:
       begin
@@ -1176,6 +1207,12 @@ begin
       TTokenType.Input:
       begin
         ExecuteInput;
+      end;
+      // CLS
+      TTokenType.Cls:
+      begin
+        Console.Clear();
+        Scanner.NextToken;
       end;
       // IF
       TTokenType.&If:
@@ -1207,7 +1244,7 @@ begin
         ExecuteNext;
         Continue;
       end;
-      // NEXT
+      // SLEEP
       TTokenType.Sleep:
       begin
         ExecuteSleep;
@@ -1234,7 +1271,9 @@ begin
       NextLine;
       // is running?
       if IsRunning then
-        Continue
+      begin
+        Continue;
+      end
       else
         Break;
     end;
@@ -1305,9 +1344,9 @@ begin
     begin
       // delete line
       if Lines.IndexByNumber(Number) <> -1 then
-        Lines.DeleteLine(Number)
-      else
-        Error(NumberPos, sUndefinedLineNumber);
+        Lines.DeleteLine(Number);
+      //else
+      //  Error(NumberPos, sUndefinedLineNumber);
     end;
   end else
   begin

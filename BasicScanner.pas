@@ -1,3 +1,8 @@
+// TurboriumBasic
+//
+// Turborium(c) 2021-2024
+//
+// Source code: https://github.com/turborium/turboriumbasic
 unit BasicScanner;
 
 {$SCOPEDENUMS ON}
@@ -31,6 +36,7 @@ type
     // operators
     Print,
     Input,
+    Cls,
     Let,
     Rem,
     &Goto,
@@ -299,6 +305,8 @@ begin
           FToken := TTokenType.&Goto
         else if TokenString = 'INPUT' then
           FToken := TTokenType.Input
+        else if TokenString = 'CLS' then
+          FToken := TTokenType.Cls
         else if TokenString = 'IF' then
           FToken := TTokenType.&If
         else if TokenString = 'THEN' then
